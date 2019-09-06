@@ -1,0 +1,128 @@
+unit Unit1;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
+  FMX.Layouts, FMX.Controls.Presentation, FMX.StdCtrls, FMX.Ani;
+
+type
+  TForm1 = class(TForm)
+    Layout1: TLayout;
+    Circle1: TCircle;
+    Circle2: TCircle;
+    Circle3: TCircle;
+    Timer1: TTimer;
+    Label1: TLabel;
+    Label2: TLabel;
+    procedure FormCreate(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure Circle3MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Single);
+    procedure Label1Click(Sender: TObject);
+    procedure Label1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Single);
+    procedure Circle3DblClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  ST : TThread.TSystemTimes;
+  fa1 : TFloatAnimation;
+  fa2 : TFloatAnimation;
+
+implementation
+
+{$R *.fmx}
+
+procedure TForm1.Circle3DblClick(Sender: TObject);
+begin
+Application.Terminate;
+end;
+
+procedure TForm1.Circle3MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Single);
+begin
+Self.StartWindowDrag;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+fa1:= TFloatAnimation.Create(nil);
+fa1.Parent:=Circle3;
+fa1.Loop:=true;
+fa1.AutoReverse:=true;
+fa1.StartValue:=130;
+fa1.PropertyName:='Height';
+fa1.delay:=0.5;
+
+fa2:= TFloatAnimation.Create(nil);
+fa2.Parent:=Circle3;
+fa2.Loop:=true;
+fa2.AutoReverse:=true;
+fa2.StartValue:=130;
+fa2.PropertyName:='Width';
+fa2.delay:=0.5;
+
+
+end;
+
+procedure TForm1.Label1Click(Sender: TObject);
+begin
+Application.Terminate;
+end;
+
+procedure TForm1.Label1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Single);
+begin
+Self.StartWindowDrag;
+end;
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+var
+  x:integer;
+  h,w,e:Single;
+  begin
+  x:=TThread.GetCPUUsage(ST);
+  h:=130 + Round(x*0.3);
+  w:=130 + Round (x*0.3);
+  e:=x / 100 - 0.001;
+  if x<=15 then
+  begin
+    Circle3.Fill.Gradient.Points.Points[1].Offset:=0.010;
+    Circle3.Animatecolor('Fill.Color',$FF1DE0FF, 0.5);
+    end;
+
+    if (x>15) and (x<25) then
+
+    begin
+    Circle3.Fill.Gradient.Points.Points[1].Offset:=e;
+    Circle3.Animatecolor('Fill.Color',$A91DFF54, 0.5);
+    end;
+
+    if (x>25) then
+
+    begin
+    Circle3.Fill.Gradient.Points.Points[1].Offset:=e;
+    Circle3.Animatecolor('Fill.Color',$A9FF1D1D, 0.5);
+    end;
+
+    fa1.StopValue:=h;
+    fa2.StopValue:=w;
+
+    if fa1.Enabled=false then
+    begin
+      fa1.Enabled:=True;
+      fa2.Enabled:=True;
+    end;
+
+    Label1.Text:='CPU' + #13 + #10 + Format('%d%%', [x]);
+
+end;
+
+end.
